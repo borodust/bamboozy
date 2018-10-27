@@ -65,12 +65,26 @@
 ;;; MODEL
 ;;;
 (defclass model ()
-  ((features :initform nil :initarg :features :reader model-features)))
+  ((feature-table :initform (make-hash-table :test #'equal))))
 
 
-(defun %add-model-feature (model feature)
-  (with-slots (features) model
-    (push feature features)))
+(defmethod initialize-instance :after ((this model) &key features)
+  (with-slots (feature-table) this
+    (loop for feature in features
+          do (alexandria:if-let ((id (id-of feature)))
+               (setf (gethash id feature-table) feature)
+               (push feature (gethash nil feature-table))))))
+
+
+(defun model-features (model)
+  (with-slots (feature-table stray-feature-list) model
+    (loop for feature being the hash-value of feature-table
+          nconc (alexandria:ensure-list feature))))
+
+
+(defun model-feature-by-id (model id)
+  (with-slots (feature-table) model
+    (gethash id feature-table)))
 
 
 (defun invert-model-y (number)
@@ -85,6 +99,7 @@
 (defun parse-feature-type (style)
   (let ((stroke-dasharray (getf style :stroke-dasharray)))
     (if (or (null stroke-dasharray)
+            (equalp "" stroke-dasharray)
             (equalp "null" stroke-dasharray)
             (equalp "none" stroke-dasharray))
         :obstacle
@@ -101,15 +116,17 @@
     (error "Unrecognized model ~A: ~A" feature-type name)))
 
 
-(defmethod make-model-feature ((name (eql :path)) id type object &key stroke stroke-opacity)
+(defmethod make-model-feature ((name (eql :path)) id type object &key stroke stroke-width
+                                                                   stroke-opacity)
   (make-instance 'path-feature
                  :id id
                  :type type
                  :stroke-paint (parse-color stroke (parse-number:parse-number stroke-opacity))
+                 :stroke-width (and stroke-width (parse-number:parse-number stroke-width))
                  :points (extract-points object)))
 
 
-(defmethod make-model-feature ((name (eql :rect)) id type object &key fill stroke
+(defmethod make-model-feature ((name (eql :rect)) id type object &key fill stroke stroke-width
                                                                    fill-opacity stroke-opacity)
   (destructuring-bind (&key x y width height &allow-other-keys) object
     (make-instance 'rect-feature
@@ -117,25 +134,28 @@
                    :type type
                    :fill-paint (parse-color fill (parse-number:parse-number fill-opacity))
                    :stroke-paint (parse-color stroke (parse-number:parse-number stroke-opacity))
+                   :stroke-width (and stroke-width (parse-number:parse-number stroke-width))
                    :origin (gamekit:vec2 (parse-number:parse-number x)
                                          (invert-model-y (parse-number:parse-number y)))
                    :width (parse-number:parse-number width)
                    :height (parse-number:parse-number height))))
 
 
-(defmethod make-model-feature ((name (eql :line)) id type object &key stroke stroke-opacity)
+(defmethod make-model-feature ((name (eql :line)) id type object &key stroke stroke-width
+                                                                   stroke-opacity)
   (destructuring-bind (&key x1 y1 x2 y2 &allow-other-keys) object
     (make-instance 'line-feature
                    :id id
                    :type type
                    :stroke-paint (parse-color stroke (parse-number:parse-number stroke-opacity))
+                   :stroke-width (and stroke-width (parse-number:parse-number stroke-width))
                    :origin (gamekit:vec2 (parse-number:parse-number x1)
                                          (invert-model-y (parse-number:parse-number y1)))
                    :end (gamekit:vec2 (parse-number:parse-number x2)
                                       (invert-model-y (parse-number:parse-number y2))))))
 
 
-(defmethod make-model-feature ((name (eql :ellipse)) id type object &key fill stroke
+(defmethod make-model-feature ((name (eql :ellipse)) id type object &key fill stroke stroke-width
                                                                       fill-opacity stroke-opacity)
   (destructuring-bind (&key cx cy rx ry &allow-other-keys) object
     (make-instance 'ellipse-feature
@@ -143,6 +163,7 @@
                    :type type
                    :fill-paint (parse-color fill (parse-number:parse-number fill-opacity))
                    :stroke-paint (parse-color stroke (parse-number:parse-number stroke-opacity))
+                   :stroke-width (and stroke-width (parse-number:parse-number stroke-width))
                    :origin (gamekit:vec2 (parse-number:parse-number cx)
                                          (invert-model-y (parse-number:parse-number cy)))
                    :points (extract-points object)
