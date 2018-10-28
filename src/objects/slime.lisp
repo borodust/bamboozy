@@ -2,6 +2,11 @@
 
 (defparameter *slime-skin-subdivision* 20)
 
+(defparameter *slime-core-stiffness* 2000)
+
+(defparameter *slime-core-damping* 20)
+
+
 (defparameter *slime-model*
   (parse-model
    (alexandria:read-file-into-string
@@ -52,7 +57,9 @@
                  (push (ge.phy:make-damped-string-constraint (universe)
                                                              (slime-core-body core)
                                                              body
-                                                             radius 1000 10)
+                                                             radius
+                                                             *slime-core-stiffness*
+                                                             *slime-core-damping*)
                        constraints)
                  shape))
              (%link-segment (prev-shape next-shape)

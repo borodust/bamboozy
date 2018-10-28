@@ -26,7 +26,7 @@
     (destroy-level level)))
 
 
-(defmethod fistmage:button-pressed ((this start-state) (button (eql :space)))
+(defmethod fistmage:button-pressed ((this start-state) (button (eql :enter)))
   (fistmage:transition-to 'start-state))
 
 
@@ -40,6 +40,5 @@
   (with-slots (slime camera level) this
     (let ((camera-pos (camera-position camera (slime-position slime))))
       (gamekit:translate-canvas (gamekit:x camera-pos) (gamekit:y camera-pos)))
-    (gamekit:draw-text "WTF" (gamekit:vec2 100 100))
-    (render slime)
-    (render level)))
+    (render level)
+    (render slime)))

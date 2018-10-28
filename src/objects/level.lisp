@@ -74,6 +74,17 @@
                  :shape (ge.phy:make-circle-shape (universe) (radius-of feature))))
 
 
+(defclass rectangle-body (body) ())
+
+
+(defmethod make-body-from-feature ((feature rect-feature) &key &allow-other-keys)
+  (make-instance 'rectangle-body
+                 :shape (ge.phy:make-box-shape (universe)
+                                               (width-of feature)
+                                               (height-of feature)
+                                               :offset (origin-of feature))))
+
+
 ;;;
 ;;; LEVEL
 ;;;

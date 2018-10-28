@@ -96,8 +96,8 @@
     (gethash id feature-table)))
 
 
-(defun invert-model-y (number)
-  (- *model-height* number))
+(defun invert-model-y (number &optional (height 0))
+  (- *model-height* number height))
 
 
 (defun extract-points (object)
@@ -138,16 +138,17 @@
 (defmethod make-model-feature ((name (eql :rect)) id type object &key fill stroke stroke-width
                                                                    fill-opacity stroke-opacity)
   (destructuring-bind (&key x y width height &allow-other-keys) object
-    (make-instance 'rect-feature
-                   :id id
-                   :type type
-                   :fill-paint (parse-color fill (parse-number:parse-number fill-opacity))
-                   :stroke-paint (parse-color stroke (parse-number:parse-number stroke-opacity))
-                   :stroke-width (and stroke-width (parse-number:parse-number stroke-width))
-                   :origin (gamekit:vec2 (parse-number:parse-number x)
-                                         (invert-model-y (parse-number:parse-number y)))
-                   :width (parse-number:parse-number width)
-                   :height (parse-number:parse-number height))))
+    (let ((height (parse-number:parse-number height)))
+      (make-instance 'rect-feature
+                     :id id
+                     :type type
+                     :fill-paint (parse-color fill (parse-number:parse-number fill-opacity))
+                     :stroke-paint (parse-color stroke (parse-number:parse-number stroke-opacity))
+                     :stroke-width (and stroke-width (parse-number:parse-number stroke-width))
+                     :origin (gamekit:vec2 (parse-number:parse-number x)
+                                           (invert-model-y (parse-number:parse-number y) height))
+                     :width (parse-number:parse-number width)
+                     :height height))))
 
 
 (defmethod make-model-feature ((name (eql :line)) id type object &key stroke stroke-width
