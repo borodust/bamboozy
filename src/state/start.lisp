@@ -21,8 +21,9 @@
 
 
 (defmethod fistmage:discard-state ((this start-state))
-  (with-slots (slime) this
-    (destroy-slime slime)))
+  (with-slots (slime level) this
+    (destroy-slime slime)
+    (destroy-level level)))
 
 
 (defmethod fistmage:button-pressed ((this start-state) (button (eql :space)))
@@ -31,13 +32,14 @@
 
 (defmethod fistmage:act ((this start-state))
   (with-slots (universe) this
-    (ge.phy:observe-universe (universe) 0.014)))
+    (loop repeat 10
+          do (ge.phy:observe-universe (universe) 0.0014))))
 
 
 (defmethod fistmage:draw ((this start-state))
   (with-slots (slime camera level) this
-    (let ((camera-pos (camera-position camera (gamekit:vec2 5 5))))
+    (let ((camera-pos (camera-position camera (slime-position slime))))
       (gamekit:translate-canvas (gamekit:x camera-pos) (gamekit:y camera-pos)))
-    (gamekit:scale-canvas 1 1)
+    (gamekit:draw-text "WTF" (gamekit:vec2 100 100))
     (render slime)
     (render level)))

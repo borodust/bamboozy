@@ -21,7 +21,7 @@
   (with-slots (universe) this
     (flet ((%on-pre-solve (this-shape that-shape)
              (declare (ignore this-shape that-shape))
-             (setf (ge.phy:collision-friction) 1000)
+             (setf (ge.phy:collision-friction) 0.1)
              t))
       (setf universe (ge.phy:make-universe :2d :on-pre-solve #'%on-pre-solve)
             (ge.phy:gravity universe) (gamekit:vec2 0 -9.81)))))

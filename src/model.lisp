@@ -55,6 +55,15 @@
 
 
 ;;;
+;;; CIRCLE
+;;;
+(defclass circle-feature (model-feature)
+  ((origin :initarg :origin :reader origin-of)
+   (radius :initarg :radius :reader radius-of)
+   (points :initarg :points :reader points-of)))
+
+
+;;;
 ;;; PATH
 ;;;
 (defclass path-feature (model-feature)
@@ -82,7 +91,7 @@
           nconc (alexandria:ensure-list feature))))
 
 
-(defun model-feature-by-id (model id)
+(defun find-model-feature-by-id (model id)
   (with-slots (feature-table) model
     (gethash id feature-table)))
 
@@ -174,7 +183,7 @@
 (defmethod make-model-feature ((name (eql :circle)) id type object &key fill stroke stroke-width
                                                                      fill-opacity stroke-opacity)
   (destructuring-bind (&key cx cy r &allow-other-keys) object
-    (make-instance 'ellipse-feature
+    (make-instance 'circle-feature
                    :id id
                    :type type
                    :fill-paint (parse-color fill (parse-number:parse-number fill-opacity))
@@ -183,8 +192,7 @@
                    :origin (gamekit:vec2 (parse-number:parse-number cx)
                                          (invert-model-y (parse-number:parse-number cy)))
                    :points (extract-points object)
-                   :x-radius (parse-number:parse-number r)
-                   :y-radius (parse-number:parse-number r))))
+                   :radius (parse-number:parse-number r))))
 
 
 (defun %make-model-feature (object)

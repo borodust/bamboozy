@@ -14,7 +14,7 @@
     (let* ((cursor-offset (gamekit:div (gamekit:subt *viewport-half* (fistmage:cursor-position)) 2))
            (current-seconds (bodge-util:real-time-seconds))
            (time-delta (- current-seconds timestamp))
-           (target-pos (gamekit:add cursor-offset player-pos *viewport-half*))
+           (target-pos (gamekit:add cursor-offset (gamekit:mult (scale player-pos) -1) *viewport-half*))
            (target-vec (gamekit:subt target-pos current-position))
            (target-distance (ge.ng:vector-length target-vec)))
       (when (> target-distance 0d0)
