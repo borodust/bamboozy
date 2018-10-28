@@ -30,6 +30,10 @@
   (fistmage:transition-to 'start-state))
 
 
+(defmethod fistmage:button-pressed ((this start-state) (button (eql :space)))
+  )
+
+
 (defmethod fistmage:act ((this start-state))
   (with-slots (universe) this
     (loop repeat 10

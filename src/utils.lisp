@@ -37,6 +37,18 @@
 (defgeneric render (object))
 
 
+(defgeneric pre-collide (this-object that-object)
+  (:method (this that)
+    (declare (ignore this that))
+    (setf (ge.phy:collision-friction) 1.0)
+    t))
+
+
+(defgeneric collide (this-object that-object)
+  (:method (this that)
+    (declare (ignore this that))))
+
+
 (defun shape-position (shape)
   (ge.phy:body-position (ge.phy:shape-body shape)))
 
