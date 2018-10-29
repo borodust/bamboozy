@@ -104,8 +104,7 @@
 (defclass level ()
   ((visuals :initform nil :initarg :visuals)
    (bodies :initform nil :initarg :bodies)
-   (spawn-point :initform (gamekit:vec2 5 5) :accessor player-spawn-point-of)
-   (enemy-spawns :initform nil :accessor enemy-spawn-points-of)))
+   (spawn-point :initarg :spawn :accessor spawn-point-of)))
 
 
 (defmethod render ((this level))
@@ -115,14 +114,18 @@
 
 
 (defun make-level (level-model)
-  (let (visuals bodies)
+  (let (visuals bodies spawn)
     (loop for feature in (model-features level-model)
           for type = (feature-type-of feature)
+          when (equalp (id-of feature) "slime-spawn")
+            do (setf spawn (origin-of feature))
           when (or (eq :obstacle type) (eq :background type))
             do (push (make-visual-from-feature feature) visuals)
           when (or (eq :obstacle type) (eq :controller type))
             do (push (make-body-from-feature feature) bodies))
-    (make-instance 'level :visuals visuals :bodies bodies)))
+    (make-instance 'level :visuals visuals
+                          :bodies bodies
+                          :spawn (or spawn (gamekit:vec2 5 5)))))
 
 
 (defun destroy-level (level)

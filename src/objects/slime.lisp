@@ -72,7 +72,7 @@
                       (shape (ge.phy:make-circle-shape (universe) (/ thickness 2)
                                                        :body body
                                                        :substance core)))
-                 (setf (ge.phy:body-position body) (gamekit:add point core-offset))
+                 (setf (ge.phy:body-position body) (gamekit:add origin point core-offset))
                  (push (ge.phy:make-damped-string-constraint (universe)
                                                              (slime-core-body core)
                                                              body
@@ -172,14 +172,16 @@
     (slime-core-position core)))
 
 
-(defmethod initialize-instance :after ((this slime) &key)
+(defmethod initialize-instance :after ((this slime) &key position)
   (with-slots (core skin) this
     (let ((slime-core (find-model-feature-by-id *slime-model* "slime-core"))
           (slime-body (find-model-feature-by-id *slime-model* "slime-body")))
-      (setf core (make-slime-core (origin-of slime-core)
+      (setf core (make-slime-core (gamekit:add (origin-of slime-core)
+                                               position)
                                   this
                                   (radius-of slime-core))
-            skin (make-slime-body core (origin-of slime-body)
+            skin (make-slime-body core (gamekit:add (origin-of slime-body)
+                                                    position)
                                   (radius-of slime-body)
                                   (fill-paint-of slime-body)
                                   (stroke-paint-of slime-body)
@@ -237,8 +239,7 @@
 
 
 (defun spawn-slime (position)
-  (declare (ignore position))
-  (make-instance 'slime))
+  (make-instance 'slime :position position))
 
 
 (defun destroy-slime (slime)

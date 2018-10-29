@@ -16,6 +16,12 @@
           (t (error "Unrecognized color encoding")))))))
 
 
+(defun parse-size (number-string)
+  (let ((number-string (if (alexandria:ends-with-subseq "px" number-string :test #'equalp)
+                           (subseq number-string 0 (- (length number-string) 2))
+                           number-string)))
+    (parse-number:parse-number number-string)))
+
 ;;;
 ;;; FEATURES
 ;;;
@@ -126,29 +132,29 @@
 
 
 (defmethod make-model-feature ((name (eql :path)) id type object &key fill stroke stroke-width
-                                                                   fill-opacity stroke-opacity)
+                                                                   (fill-opacity "1.0") (stroke-opacity "1.0"))
   (make-instance 'path-feature
                  :id id
                  :type type
                  :fill-paint (parse-color fill (parse-number:parse-number fill-opacity))
                  :stroke-paint (parse-color stroke (parse-number:parse-number stroke-opacity))
-                 :stroke-width (and stroke-width (parse-number:parse-number stroke-width))
+                 :stroke-width (and stroke-width (parse-size stroke-width))
                  :points (extract-points object)))
 
 
 (defmethod make-model-feature ((name (eql :rect)) id type object &key fill stroke stroke-width
-                                                                   fill-opacity stroke-opacity)
+                                                                   (fill-opacity "1.0") (stroke-opacity "1.0"))
   (destructuring-bind (&key x y width height &allow-other-keys) object
-    (let ((height (parse-number:parse-number height)))
+    (let ((height (parse-size height)))
       (make-instance 'rect-feature
                      :id id
                      :type type
                      :fill-paint (parse-color fill (parse-number:parse-number fill-opacity))
                      :stroke-paint (parse-color stroke (parse-number:parse-number stroke-opacity))
-                     :stroke-width (and stroke-width (parse-number:parse-number stroke-width))
+                     :stroke-width (and stroke-width (parse-size stroke-width))
                      :origin (gamekit:vec2 (parse-number:parse-number x)
                                            (invert-model-y (parse-number:parse-number y) height))
-                     :width (parse-number:parse-number width)
+                     :width (parse-size width)
                      :height height))))
 
 
@@ -159,7 +165,7 @@
                    :id id
                    :type type
                    :stroke-paint (parse-color stroke (parse-number:parse-number stroke-opacity))
-                   :stroke-width (and stroke-width (parse-number:parse-number stroke-width))
+                   :stroke-width (and stroke-width (parse-size stroke-width))
                    :origin (gamekit:vec2 (parse-number:parse-number x1)
                                          (invert-model-y (parse-number:parse-number y1)))
                    :end (gamekit:vec2 (parse-number:parse-number x2)
@@ -174,12 +180,12 @@
                    :type type
                    :fill-paint (parse-color fill (parse-number:parse-number fill-opacity))
                    :stroke-paint (parse-color stroke (parse-number:parse-number stroke-opacity))
-                   :stroke-width (and stroke-width (parse-number:parse-number stroke-width))
+                   :stroke-width (and stroke-width (parse-size stroke-width))
                    :origin (gamekit:vec2 (parse-number:parse-number cx)
                                          (invert-model-y (parse-number:parse-number cy)))
                    :points (extract-points object)
-                   :x-radius (parse-number:parse-number rx)
-                   :y-radius (parse-number:parse-number ry))))
+                   :x-radius (parse-size rx)
+                   :y-radius (parse-size ry))))
 
 
 (defmethod make-model-feature ((name (eql :circle)) id type object &key fill stroke stroke-width
@@ -190,11 +196,11 @@
                    :type type
                    :fill-paint (parse-color fill (parse-number:parse-number fill-opacity))
                    :stroke-paint (parse-color stroke (parse-number:parse-number stroke-opacity))
-                   :stroke-width (and stroke-width (parse-number:parse-number stroke-width))
+                   :stroke-width (and stroke-width (parse-size stroke-width))
                    :origin (gamekit:vec2 (parse-number:parse-number cx)
                                          (invert-model-y (parse-number:parse-number cy)))
                    :points (extract-points object)
-                   :radius (parse-number:parse-number r))))
+                   :radius (parse-size r))))
 
 
 (defun %make-model-feature (object)

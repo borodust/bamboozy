@@ -4,7 +4,7 @@
 (defparameter *test-level*
   (parse-model
    (alexandria:read-file-into-string
-    (asdf:system-relative-pathname :bamboozy "rsc/level/level0.svg"))))
+    (asdf:system-relative-pathname :bamboozy (format nil "rsc/level/level0.svg")))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -16,8 +16,8 @@
 
 (defmethod fistmage:initialize-state ((this start-state) &key)
   (with-slots (slime level) this
-    (setf slime (spawn-slime (gamekit:vec2 5 5))
-          level (make-level *test-level*))))
+    (setf level (make-level *test-level*)
+          slime (spawn-slime (spawn-point-of level)))))
 
 
 (defmethod fistmage:discard-state ((this start-state))
@@ -57,8 +57,8 @@
   (with-slots (slime) this
     (reset-slime-simulation slime)
     (let ((*slime-grounded-p* nil))
-      (loop repeat 14
-            do (ge.phy:observe-universe (universe) 0.001))
+      (loop repeat 20
+            do (ge.phy:observe-universe (universe) 0.0007))
       (update-slime-grounded-status slime *slime-grounded-p*))))
 
 
