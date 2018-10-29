@@ -57,8 +57,8 @@
   (with-slots (slime) this
     (reset-slime-simulation slime)
     (let ((*slime-grounded-p* nil))
-      (loop repeat 10
-            do (ge.phy:observe-universe (universe) 0.0014))
+      (loop repeat 14
+            do (ge.phy:observe-universe (universe) 0.001))
       (update-slime-grounded-status slime *slime-grounded-p*))))
 
 

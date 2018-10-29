@@ -125,11 +125,12 @@
     (error "Unrecognized model ~A: ~A" feature-type name)))
 
 
-(defmethod make-model-feature ((name (eql :path)) id type object &key stroke stroke-width
-                                                                   stroke-opacity)
+(defmethod make-model-feature ((name (eql :path)) id type object &key fill stroke stroke-width
+                                                                   fill-opacity stroke-opacity)
   (make-instance 'path-feature
                  :id id
                  :type type
+                 :fill-paint (parse-color fill (parse-number:parse-number fill-opacity))
                  :stroke-paint (parse-color stroke (parse-number:parse-number stroke-opacity))
                  :stroke-width (and stroke-width (parse-number:parse-number stroke-width))
                  :points (extract-points object)))

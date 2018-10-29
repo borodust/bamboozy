@@ -114,13 +114,19 @@
 
 
 (defmethod render ((this path-visual))
-  (gamekit:draw-polyline (mapcar #'scale (points-of this))
-                         (stroke-paint-of this)
-                         :thickness (scale (stroke-width-of this))))
+  (if (fill-paint-of this)
+      (gamekit:draw-polygon (mapcar #'scale (points-of this))
+                            :fill-paint (fill-paint-of this)
+                            :stroke-paint (stroke-paint-of this)
+                            :thickness (scale (stroke-width-of this)))
+      (gamekit:draw-polyline (mapcar #'scale (points-of this))
+                             (stroke-paint-of this)
+                             :thickness (scale (stroke-width-of this)))))
 
 
 (defmethod make-visual-from-feature ((feature path-feature) &key)
   (make-path-visual (points-of feature)
+                    :fill-paint (fill-paint-of feature)
                     :stroke-paint (stroke-paint-of feature)
                     :stroke-width (stroke-width-of feature)))
 
