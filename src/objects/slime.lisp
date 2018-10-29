@@ -2,7 +2,7 @@
 
 (defparameter *slime-skin-subdivision* 20)
 
-(defparameter *slime-core-stiffness* 2000)
+(defparameter *slime-core-stiffness* 1500)
 
 (defparameter *slime-core-damping* 20)
 
@@ -18,22 +18,28 @@
 ;;;
 (defclass slime-core ()
   ((body :initarg :body :reader slime-core-body)
+   (shape :initarg :shape)
    (slime :initarg :slime)))
 
 
-(defun make-slime-core (position slime)
-  (let ((body (ge.phy:make-rigid-body (universe))))
+(defun make-slime-core (position slime radius)
+  (let* ((body (ge.phy:make-rigid-body (universe)))
+         (shape (ge.phy:make-circle-shape (universe) radius
+                                          :body body)))
     (setf (ge.phy:body-position body) position)
-    (make-instance 'slime-core :body body :slime slime)))
+    (make-instance 'slime-core :body body
+                               :shape shape
+                               :slime slime)))
 
 
 (defun slime-core-position (core)
-  (with-slots (body) core
+  (with-slots (body shape) core
     (ge.phy:body-position body)))
 
 
 (defun destroy-slime-core (core)
-  (with-slots (body) core
+  (with-slots (body shape) core
+    (ge.ng:dispose shape)
     (ge.ng:dispose body)))
 
 
@@ -87,7 +93,8 @@
                  (push (ge.phy:make-slide-constraint (universe)
                                                      (ge.phy:shape-body prev-shape)
                                                      (ge.phy:shape-body next-shape)
-                                                     0 rest-length)
+                                                     (/ rest-length 10)
+                                                     rest-length)
                        constraints)))
              (%next-point (num)
                (let ((angle (* (/ (* 2 pi) *slime-skin-subdivision*) num)))
@@ -169,7 +176,9 @@
   (with-slots (core skin) this
     (let ((slime-core (find-model-feature-by-id *slime-model* "slime-core"))
           (slime-body (find-model-feature-by-id *slime-model* "slime-body")))
-      (setf core (make-slime-core (origin-of slime-core) this)
+      (setf core (make-slime-core (origin-of slime-core)
+                                  this
+                                  (radius-of slime-core))
             skin (make-slime-body core (origin-of slime-body)
                                   (radius-of slime-body)
                                   (fill-paint-of slime-body)

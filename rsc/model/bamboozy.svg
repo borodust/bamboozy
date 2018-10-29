@@ -1,19 +1,72 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
-<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="100" height="100" viewBox="0 0 100 100" version="1.1" id="root" inkscape:version="0.92.2 2405546, 2018-03-11" sodipodi:docname="bamboozy.svg">
-  <defs id="defs" />
-  <sodipodi:namedview id="base" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:zoom="181.01934" inkscape:cx="0.16762311" inkscape:cy="-1.0115342" inkscape:document-units="px" inkscape:current-layer="root" showgrid="false" units="px" inkscape:pagecheckerboard="false" inkscape:window-width="1920" inkscape:window-height="1025" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="1" />
-  <metadata id="meta">
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="100"
+   height="100"
+   viewBox="0 0 100 100"
+   version="1.1"
+   id="root"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="bamboozy.svg">
+  <defs
+     id="defs" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="256"
+     inkscape:cx="1.0068489"
+     inkscape:cy="0.27985771"
+     inkscape:document-units="px"
+     inkscape:current-layer="root"
+     showgrid="false"
+     units="px"
+     inkscape:pagecheckerboard="false"
+     inkscape:window-width="3840"
+     inkscape:window-height="2003"
+     inkscape:window-x="-18"
+     inkscape:window-y="-18"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="meta">
     <rdf:RDF>
-      <cc:Work rdf:about="">
+      <cc:Work
+         rdf:about="">
         <dc:format>image/svg+xml</dc:format>
-        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
         <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <g inkscape:label="Base Layer" inkscape:groupmode="layer" id="root_layer" />
-  <circle style="fill:#008000;fill-opacity:0.35071094;stroke:#4f9a53;stroke-width:0.04761904;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" id="slime-body" cx="3.4273809e-16" cy="100" inkscape:label="slime-body" r="0.47619048" />
-  <circle style="fill:#ff0000;fill-opacity:1;stroke:#4f9a53;stroke-width:0.02560288;stroke-miterlimit:4;stroke-dasharray:0.05120577, 0.02560289, 0.01280144, 0.02560289;stroke-dashoffset:0;stroke-opacity:1" id="slime-core" cx="2.9802323e-09" cy="100" inkscape:label="#slime-core" r="0.037198558" />
+  <g
+     inkscape:label="Base Layer"
+     inkscape:groupmode="layer"
+     id="root_layer" />
+  <circle
+     style="fill:#008000;fill-opacity:0.35071094;stroke:#4f9a53;stroke-width:0.04761904;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+     id="slime-body"
+     cx="3.4273809e-16"
+     cy="100"
+     inkscape:label="slime-body"
+     r="0.47619048" />
+  <circle
+     style="fill:#ff0000;fill-opacity:1;stroke:#4f9a53;stroke-width:0.15361728;stroke-miterlimit:4;stroke-dasharray:0.3072346, 0.15361734, 0.07680866, 0.15361734;stroke-dashoffset:0;stroke-opacity:1"
+     id="slime-core"
+     cx="-4.4703485e-009"
+     cy="100"
+     inkscape:label="#slime-core"
+     transform="scale(-1,1)"
+     r="0.22319137" />
 </svg>
