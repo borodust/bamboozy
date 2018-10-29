@@ -25,11 +25,7 @@ os:
   - osx
 
 install:
-  - curl -L http://bodge.borodust.org/files/install.sh | sh -s ccl
-
-cache:
-  directories:
-  - "$HOME/.config/common-lisp/"
+  - curl -L http://bodge.borodust.org/files/install.sh | sh
 
 script:
   - >
