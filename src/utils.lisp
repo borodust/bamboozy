@@ -1,8 +1,10 @@
 (cl:in-package :bamboozy)
 
+(declaim (special *this-shape*
+                  *that-shape*))
+
 
 (defparameter *unit-scale* 100)
-
 
 (defgeneric scale (value))
 (defgeneric unscale (value))

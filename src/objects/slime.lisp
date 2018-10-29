@@ -6,6 +6,7 @@
 
 (defparameter *slime-core-damping* 20)
 
+(defparameter *slime-grounded-p* nil)
 
 (defparameter *slime-model*
   (parse-model
@@ -16,13 +17,14 @@
 ;;; CORE
 ;;;
 (defclass slime-core ()
-  ((body :initarg :body :reader slime-core-body)))
+  ((body :initarg :body :reader slime-core-body)
+   (slime :initarg :slime)))
 
 
-(defun make-slime-core (position)
+(defun make-slime-core (position slime)
   (let ((body (ge.phy:make-rigid-body (universe))))
     (setf (ge.phy:body-position body) position)
-    (make-instance 'slime-core :body body)))
+    (make-instance 'slime-core :body body :slime slime)))
 
 
 (defun slime-core-position (core)
@@ -34,11 +36,21 @@
   (with-slots (body) core
     (ge.ng:dispose body)))
 
+
+(defmethod collide ((this slime-core) (that level-body))
+  (with-slots (slime) this
+    (register-colliding-slime-shape slime *this-shape* *that-shape*)
+    (setf *slime-grounded-p* t)))
+
+
+(defmethod collide ((that level-body) (this slime-core))
+  (collide this that))
+
 ;;;
 ;;; SKIN
 ;;;
 (defclass slime-body ()
-  ((shapes :initarg :shapes)
+  ((shapes :initarg :shapes :reader slime-body-shapes)
    (constraints :initarg :constraints)
    (fill :initarg :fill)
    (stroke :initarg :stroke)
@@ -52,7 +64,8 @@
     (labels ((%make-shape (point)
                (let* ((body (ge.phy:make-rigid-body (universe)))
                       (shape (ge.phy:make-circle-shape (universe) (/ thickness 2)
-                                                       :body body)))
+                                                       :body body
+                                                       :substance core)))
                  (setf (ge.phy:body-position body) (gamekit:add point core-offset))
                  (push (ge.phy:make-damped-string-constraint (universe)
                                                              (slime-core-body core)
@@ -60,6 +73,12 @@
                                                              radius
                                                              *slime-core-stiffness*
                                                              *slime-core-damping*)
+                       constraints)
+                 (push (ge.phy:make-slide-constraint (universe)
+                                                     (slime-core-body core)
+                                                     body
+                                                     (/ radius 10)
+                                                     radius)
                        constraints)
                  shape))
              (%link-segment (prev-shape next-shape)
@@ -135,7 +154,10 @@
 ;;;
 (defclass slime ()
   ((core :initform nil)
-   (skin :initform nil)))
+   (skin :initform nil)
+   (grounded-p :initform nil)
+   (colliding-shapes :initform nil)
+   (bounding-constraints :initform nil)))
 
 
 (defun slime-position (slime)
@@ -147,12 +169,56 @@
   (with-slots (core skin) this
     (let ((slime-core (find-model-feature-by-id *slime-model* "slime-core"))
           (slime-body (find-model-feature-by-id *slime-model* "slime-body")))
-      (setf core (make-slime-core (origin-of slime-core))
+      (setf core (make-slime-core (origin-of slime-core) this)
             skin (make-slime-body core (origin-of slime-body)
                                   (radius-of slime-body)
                                   (fill-paint-of slime-body)
                                   (stroke-paint-of slime-body)
                                   (stroke-width-of slime-body))))))
+
+
+(defun update-slime-grounded-status (slime grounded-p)
+  (with-slots ((this-grounded-p grounded-p)) slime
+    (setf this-grounded-p grounded-p)))
+
+
+(defun slime-grounded-p (slime)
+  (with-slots (grounded-p) slime
+    grounded-p))
+
+
+(defun push-slime (slime force)
+  (with-slots (core skin) slime
+    (ge.phy:apply-force (slime-core-body core) force)
+    (loop for body-shape in (slime-body-shapes skin)
+          do (ge.phy:apply-force (ge.phy:shape-body body-shape) force))))
+
+
+(defun bind-slime (slime)
+  (with-slots (colliding-shapes bounding-constraints) slime
+    (loop for (this . that) in colliding-shapes
+          do (push (ge.phy:make-pin-constraint (universe)
+                                               (ge.phy:shape-body this)
+                                               (ge.phy:shape-body that)
+                                               :that-anchor (shape-position this))
+                   bounding-constraints))))
+
+
+(defun release-slime (slime)
+  (with-slots (bounding-constraints) slime
+    (loop for constraint in bounding-constraints
+          do (ge.ng:dispose constraint))
+    (setf bounding-constraints nil)))
+
+
+(defun register-colliding-slime-shape (slime this-shape that-shape)
+  (with-slots (colliding-shapes) slime
+    (push (cons this-shape that-shape) colliding-shapes)))
+
+
+(defun reset-slime-simulation (slime)
+  (with-slots (colliding-shapes) slime
+    (setf colliding-shapes nil)))
 
 
 (defmethod render ((this slime))

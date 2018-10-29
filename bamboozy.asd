@@ -15,8 +15,8 @@
                (:file "visual")
                (:module objects
                 :serial t
-                :components ((:file "slime")
-                             (:file "level")))
+                :components ((:file "level")
+                             (:file "slime")))
                (:module state
                 :serial t
                 :components ((:file "start")))

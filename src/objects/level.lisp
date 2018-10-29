@@ -34,9 +34,13 @@
 ;;;
 (defgeneric make-body-from-feature (feature &key &allow-other-keys))
 
-(defclass body ()
-  ((shape :initarg :shape :initform (error ":shape missing"))
-   (body :initarg :body :initform nil)))
+(defclass level-body ()
+  ((shape :initform nil)))
+
+
+(defmethod initialize-instance :after ((this level-body) &key shape-constructor)
+  (with-slots (shape) this
+    (setf shape (funcall shape-constructor this))))
 
 
 (defun destroy-body (body)
@@ -44,45 +48,54 @@
     (ge.ng:dispose shape)))
 
 
-(defclass line-body (body) ())
+(defclass line-body (level-body) ())
 
 (defmethod make-body-from-feature ((feature line-feature) &key &allow-other-keys)
-  (make-instance 'line-body
-                 :shape (ge.phy:make-segment-shape (universe)
-                                                   (origin-of feature)
-                                                   (end-of feature))))
+  (flet ((%shape-constructor (body)
+           (ge.phy:make-segment-shape (universe)
+                                      (origin-of feature)
+                                      (end-of feature)
+                                      :substance body)))
+    (make-instance 'line-body
+                   :shape-constructor #'%shape-constructor)))
 
 
-(defclass path-body (body) ())
+(defclass path-body (level-body) ())
 
 (defmethod make-body-from-feature ((feature path-feature) &key &allow-other-keys)
-  (make-instance 'path-body
-                 :shape (ge.phy:make-polyline-shape (universe) (points-of feature))))
+  (flet ((%shape-constructor (body)
+           (ge.phy:make-polyline-shape (universe) (points-of feature)
+                                       :substance body)))
+    (make-instance 'path-body :shape-constructor #'%shape-constructor)))
 
 
-(defclass ellipse-body (body) ())
+(defclass ellipse-body (level-body) ())
 
 (defmethod make-body-from-feature ((feature ellipse-feature) &key &allow-other-keys)
   (error "Unimplemented"))
 
 
-(defclass circle-body (body) ())
+(defclass circle-body (level-body) ())
 
 
 (defmethod make-body-from-feature ((feature circle-feature) &key &allow-other-keys)
-  (make-instance 'circle-body
-                 :shape (ge.phy:make-circle-shape (universe) (radius-of feature))))
+  (flet ((%shape-constructor (body)
+           (ge.phy:make-circle-shape (universe) (radius-of feature)
+                                     :substance body)))
+    (make-instance 'circle-body :shape-constructor #'%shape-constructor)))
 
 
-(defclass rectangle-body (body) ())
+(defclass rectangle-body (level-body) ())
 
 
 (defmethod make-body-from-feature ((feature rect-feature) &key &allow-other-keys)
-  (make-instance 'rectangle-body
-                 :shape (ge.phy:make-box-shape (universe)
-                                               (width-of feature)
-                                               (height-of feature)
-                                               :offset (origin-of feature))))
+  (flet ((%shape-constructor (body)
+           (ge.phy:make-box-shape (universe)
+                                  (width-of feature)
+                                  (height-of feature)
+                                  :offset (origin-of feature)
+                                  :substance body)))
+    (make-instance 'rectangle-body :shape-constructor #'%shape-constructor )))
 
 
 ;;;

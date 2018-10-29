@@ -20,10 +20,15 @@
 (defmethod initialize-instance :after ((this game) &key)
   (with-slots (universe) this
     (flet ((%on-pre-solve (this-shape that-shape)
-             (pre-collide (ge.phy:shape-substance this-shape) (ge.phy:shape-substance that-shape)))
+             (let ((*this-shape* this-shape)
+                   (*that-shape* that-shape))
+               (pre-collide (ge.phy:shape-substance this-shape)
+                            (ge.phy:shape-substance that-shape))))
            (%on-post-solve (this-shape that-shape)
-             (collide (ge.phy:shape-substance this-shape)
-                      (ge.phy:shape-substance that-shape))))
+             (let ((*this-shape* this-shape)
+                   (*that-shape* that-shape))
+               (collide (ge.phy:shape-substance this-shape)
+                        (ge.phy:shape-substance that-shape)))))
       (setf universe (ge.phy:make-universe :2d :on-pre-solve #'%on-pre-solve
                                                :on-post-solve #'%on-post-solve)
             (ge.phy:gravity universe) (gamekit:vec2 0 -9.81)))))
